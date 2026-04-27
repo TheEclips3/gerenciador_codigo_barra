@@ -115,12 +115,14 @@ def criar_codigos_barra(cod,tipo_cod: str,id_usuario,id_produto: int):
         print(f"Erro ao inserir usuario: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
         return None   
-def read_codigos_barra():
+def read_codigos_barra(usuario_id = None):
     try:
-        # executa o select
-        cur.execute("SELECT * FROM codigos_barra")
-        usuarios = cur.fetchall()
-        return usuarios
+        if usuario_id:
+            query = "SELECT * FROM codigos_barra WHERE id_usuario = %s"
+            cur.execute(query, (usuario_id,))
+        else:
+            cur.execute("SELECT * FROM codigos_barra")
+        return cur.fetchall()
     except Exception as e:
         print(f"Erro ao ler categoria: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
@@ -161,17 +163,19 @@ def criar_produtos(nome,desc: str,valor: float,id_usario,id_codigo,id_categoria:
         id_gerado = cur.fetchone()[0]
         return id_gerado
     except Exception as e:
-        print(f"Erro ao inserir usuario: {e}")
+        print(f"Erro ao inserir produto: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
         return None   
-def read_produtos():  
+def read_produtos(usuario_id = None):  
     try:
-        # executa o select
-        cur.execute("SELECT * FROM produtos")
-        usuarios = cur.fetchall()
-        return usuarios
+        if usuario_id:
+            query = "SELECT * FROM produtos WHERE id_usuario = %s"
+            cur.execute(query, (usuario_id,))
+        else:
+            cur.execute("SELECT * FROM produtos")
+        return cur.fetchall()
     except Exception as e:
-        print(f"Erro ao ler categoria: {e}")
+        print(f"Erro ao ler produto: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
         return None 
 def update_produtos(nome,desc: str,valor: float,id_usario,id_codigo,id_categoria,id: int):
@@ -188,7 +192,7 @@ def update_produtos(nome,desc: str,valor: float,id_usario,id_codigo,id_categoria
         # executa o update
         cur.execute(query,(nome,desc,valor,id_usario,id_codigo,id_categoria,id,))
     except Exception as e:
-        print(f"Erro ao dar update em codigo de barra: {e}")
+        print(f"Erro ao dar update em produto: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
         return None
 def delete_produtos(id: int):
@@ -197,6 +201,34 @@ def delete_produtos(id: int):
         # executa o delete
         cur.execute(query,(id,))
     except Exception as e:
-        print(f"Erro ao deletar codigo de barras: {e}")
+        print(f"Erro ao deletar produto: {e}")
+        conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
+        return None    
+
+def ver_produtos_cod_bar():
+    query="""
+        SELECT nome, descricao, valor, codigos_barra.codigo
+        FROM produtos
+        INNER JOIN codigos_barra ON produtos.id_codigo = codigos_barra.id
+        """
+    try:
+        resultado=cur.execute(query, )
+        return resultado
+    except Exception as e:
+        print(f"Erro ao ler produto: {e}")
+        conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
+        return None
+def ver_categoria_sem_produto():
+    query="""
+        SELECT nome
+        FROM categorias
+        LEFT JOIN produtos ON categorias.id = produtos.id_categoria
+        WHERE produtos.id_categoria IS NULL 
+        """
+    try:
+        resultado=cur.execute(query, )
+        return resultado
+    except Exception as e:
+        print(f"Erro ao ler produto: {e}")
         conn.rollback() # Desfaz em caso de erro se não estiver em autocommit
         return None    
