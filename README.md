@@ -99,7 +99,6 @@ tabelas para a chave publica e deixam RLS desativada. Isso e adequado apenas
 para demonstracao academica sem dados reais. Em producao, use Supabase Auth,
 habilite RLS e defina politicas por usuario.
 
-## Video
+## Video e README
 
-O roteiro sugerido esta em `docs/roteiro_video.md`. Substitua este trecho pelo
-link final do video antes da entrega.
+Interface e README do projeto feito com uso de inteligência artificial. Link para o Youtube do video: 
