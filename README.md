@@ -101,4 +101,4 @@ habilite RLS e defina politicas por usuario.
 
 ## Video e README
 
-Interface e README do projeto feito com uso de inteligência artificial. Link para o Youtube do video: 
+Interface e README do projeto feito com uso de inteligência artificial. Link para o Youtube do video: [video](https://youtu.be/gdx77UdQeI4)
