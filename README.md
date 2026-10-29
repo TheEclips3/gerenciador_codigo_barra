@@ -1,16 +1,11 @@
 # Gerenciador de Codigos de Barra com Supabase
 
-Trabalho avaliativo que demonstra uma aplicacao Python integrada ao PostgreSQL
-do Supabase. O sistema gerencia usuarios, categorias, produtos e codigos de
-barra, indo alem de um CRUD ao utilizar View, Function e Procedure em
-funcionalidades reais.
+Trabalho avaliativo que demonstra uma aplicacao Python integrada ao PostgreSQL do Supabase. O sistema gerencia usuarios, categorias, produtos e codigos de barra, indo alem de um CRUD ao utilizar View, Function e Procedure em funcionalidades reais.
 
 ## Identificacao
-
-- Integrante(s): **preencher antes da entrega**
+- Integrante: Artur França
 - Disciplina: Introducao a Banco de Dados
-- Professor(a): **preencher antes da entrega**
-- Data prevista da entrega: 07/10/2026
+- Professor(a): Anderson Soares
 
 ## Tecnologias
 
@@ -19,6 +14,8 @@ funcionalidades reais.
 - PostgreSQL
 - Biblioteca `supabase-py`
 - Biblioteca `python-dotenv`
+- Redis (cache de consultas, com TTL configuravel)
+- Biblioteca `redis`
 
 ## Recursos do banco utilizados
 
@@ -45,18 +42,33 @@ de cadastro transacional permanece implementada e executada na Procedure.
 ```text
 gerenciador_codigo_barra/
 |-- src/                 # codigo-fonte Python
+|   |-- index.py         # acesso ao Supabase e cache opcional
+|   `-- interface.py     # menus da aplicacao
 |-- database/
 |   |-- tables/          # tabelas e permissoes
 |   |-- views/           # View do relatorio
 |   |-- functions/       # Function de calculo
 |   |-- procedures/      # Procedure e adaptador RPC
 |   `-- inserts/         # dados de demonstracao
-|-- docs/                # roteiro do video e documentacao
 |-- .env.example
 |-- requirements.txt
-|-- index.py             # compatibilidade com o projeto antigo
 `-- interface.py         # ponto de entrada
 ```
+
+## Como o Redis funciona
+
+O Redis e usado como cache (padrao cache-aside) nas consultas de categorias,
+usuarios, produtos, codigos de barra, relatorio da View, categorias sem produtos
+e total do catalogo. O TTL padrao e de 300 segundos. Quando um cadastro,
+atualizacao, exclusao ou cadastro integrado e concluido, as chaves de cache
+com o prefixo `gerenciador_codigos:` sao invalidadas. Se o Redis estiver
+indisponivel ou nao configurado, a aplicacao continua consultando o Supabase.
+O cache e desativado por padrao; para habilita-lo, configure `REDIS_HOST` no
+arquivo `.env`. A aplicacao nao tenta conectar a um servidor Redis remoto por
+padrao.
+
+As credenciais ficam em variaveis de ambiente; nao coloque a senha diretamente
+no codigo nem publique o arquivo `.env`.
 
 ## Configuracao do Supabase
 
@@ -76,9 +88,16 @@ gerenciador_codigo_barra/
 ```env
 SUPABASE_URL=https://SEU-PROJETO.supabase.co
 SUPABASE_KEY=SUA_CHAVE_PUBLICA
+REDIS_HOST=SEU_HOST_REDIS
+REDIS_PORT=6379
+REDIS_USERNAME=default
+REDIS_PASSWORD=SUA_SENHA_REDIS
+REDIS_CACHE_TTL=300
 ```
 
-Nunca publique `.env`, uma chave `service_role` ou uma chave secreta.
+As variaveis Redis sao opcionais; remova-as ou deixe `REDIS_HOST` sem valor para
+desativar o cache. Nunca publique `.env`, uma chave `service_role` ou uma chave
+secreta. A senha Redis deve ser inserida somente localmente em `.env`.
 
 ## Como executar
 
